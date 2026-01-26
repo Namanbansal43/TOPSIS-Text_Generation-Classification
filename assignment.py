@@ -2,17 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# -----------------------------------------------------------------
-# TOPSIS Analysis – Text Generation Models
-# Roll No: 102303496
-# Criteria:
-#   BLEU Score  (+)  – higher is better
-#   ROUGE-L     (+)  – higher is better
-#   Perplexity  (-)  – lower is better
-#   Inference Time (ms) (-) – lower is better
-#   Model Size (GB) (-) – lower is better
-# -----------------------------------------------------------------
-
 data = {
     "Model": ["GPT-2", "GPT-3.5-turbo", "LLaMA-2-7B", "Mistral-7B", "Falcon-7B"],
     "BLEU Score":          [0.312, 0.478, 0.445, 0.461, 0.389],
@@ -24,11 +13,8 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Weights must sum to 1.0
 weights = np.array([0.25, 0.25, 0.20, 0.15, 0.15])
 
-# + = benefit criterion (higher is better)
-# - = cost criterion   (lower is better)
 impacts = ["+", "+", "-", "-", "-"]
 
 print("=" * 65)
@@ -38,14 +24,11 @@ print("\nInitial Data:")
 print(df.to_string(index=False))
 print("-" * 65)
 
-# Step 1 – Normalise the decision matrix
 matrix = df.iloc[:, 1:].values.astype(float)
 norm_matrix = matrix / np.sqrt((matrix ** 2).sum(axis=0))
 
-# Step 2 – Weighted normalised matrix
 weighted_matrix = norm_matrix * weights
 
-# Step 3 – Ideal best & worst solutions
 ideal_best  = []
 ideal_worst = []
 
@@ -60,11 +43,9 @@ for i in range(len(weights)):
 ideal_best  = np.array(ideal_best)
 ideal_worst = np.array(ideal_worst)
 
-# Step 4 – Euclidean distances to ideal best & worst
 dist_best  = np.sqrt(((weighted_matrix - ideal_best) ** 2).sum(axis=1))
 dist_worst = np.sqrt(((weighted_matrix - ideal_worst) ** 2).sum(axis=1))
 
-# Step 5 – TOPSIS score (closeness to ideal solution)
 topsis_score = dist_worst / (dist_best + dist_worst)
 
 df["TOPSIS Score"] = topsis_score
@@ -76,14 +57,10 @@ print("\nFinal Results (ranked):")
 print(df_sorted.to_string(index=False))
 print("=" * 65)
 
-# Save results
 output_csv = "result.csv"
 df_sorted.to_csv(output_csv, index=False)
 print(f"\nResults saved to {output_csv}")
 
-# -----------------------------------------------------------------
-# Visualisation – Bar chart of TOPSIS scores
-# -----------------------------------------------------------------
 colors = ["#4CAF50", "#2196F3", "#FF9800", "#F44336", "#9C27B0"]
 
 fig, ax = plt.subplots(figsize=(11, 6))
